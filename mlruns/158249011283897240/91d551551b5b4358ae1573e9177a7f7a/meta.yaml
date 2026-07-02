@@ -1,0 +1,14 @@
+artifact_uri: file:///D:/Github/ML projects/Telco-churn-classification/mlruns/158249011283897240/91d551551b5b4358ae1573e9177a7f7a/artifacts
+end_time: 1782981029933
+entry_point_name: ''
+experiment_id: '158249011283897240'
+lifecycle_stage: active
+run_id: 91d551551b5b4358ae1573e9177a7f7a
+run_name: gentle-hound-735
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1782981001540
+status: 3
+tags: []
+user_id: ankus

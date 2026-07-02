@@ -1,0 +1,25 @@
+artifact_path: file:///D:/Github/ML projects/Telco-churn-classification/mlruns/158249011283897240/models/m-c966e8145a77465e8534a11190050467/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.skops
+    predict_fn: predict
+    python_version: 3.12.10
+  sklearn:
+    code: null
+    pickled_model: model.skops
+    serialization_format: skops
+    sklearn_version: 1.6.1
+    skops_trusted_types:
+    - xgboost.sklearn.XGBClassifier
+    - xgboost.core.Booster
+mlflow_version: 3.14.0
+model_id: m-c966e8145a77465e8534a11190050467
+model_size_bytes: 1420755
+model_uuid: m-c966e8145a77465e8534a11190050467
+prompts: null
+run_id: 5de1c0970ac04660a6aec47b4f3d3395
+utc_time_created: '2026-07-02 08:44:39.166850'

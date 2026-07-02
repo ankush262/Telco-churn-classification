@@ -1,0 +1,9 @@
+artifact_location: file:///D:/Github/ML projects/Telco-churn-classification/mlruns/158249011283897240
+creation_time: 1782980529563
+effective_trace_archival_retention: null
+experiment_id: '158249011283897240'
+last_update_time: 1782980529563
+lifecycle_stage: active
+name: Telco Churn
+trace_location: null
+workspace: default
