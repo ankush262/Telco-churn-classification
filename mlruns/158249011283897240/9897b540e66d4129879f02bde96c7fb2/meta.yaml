@@ -1,0 +1,14 @@
+artifact_uri: file:///D:/Github/ML projects/Telco-churn-classification/mlruns/158249011283897240/9897b540e66d4129879f02bde96c7fb2/artifacts
+end_time: 1782981398483
+entry_point_name: ''
+experiment_id: '158249011283897240'
+lifecycle_stage: active
+run_id: 9897b540e66d4129879f02bde96c7fb2
+run_name: judicious-pug-935
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1782981398263
+status: 4
+tags: []
+user_id: ankus

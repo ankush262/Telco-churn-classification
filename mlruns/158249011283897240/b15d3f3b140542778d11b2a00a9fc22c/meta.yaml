@@ -1,0 +1,14 @@
+artifact_uri: file:///D:/Github/ML projects/Telco-churn-classification/mlruns/158249011283897240/b15d3f3b140542778d11b2a00a9fc22c/artifacts
+end_time: 1782981734478
+entry_point_name: ''
+experiment_id: '158249011283897240'
+lifecycle_stage: active
+run_id: b15d3f3b140542778d11b2a00a9fc22c
+run_name: judicious-doe-247
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1782981706705
+status: 3
+tags: []
+user_id: ankus

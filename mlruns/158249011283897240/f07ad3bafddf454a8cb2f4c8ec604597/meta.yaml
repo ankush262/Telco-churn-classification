@@ -1,0 +1,14 @@
+artifact_uri: file:///D:/Github/ML projects/Telco-churn-classification/mlruns/158249011283897240/f07ad3bafddf454a8cb2f4c8ec604597/artifacts
+end_time: 1782980532585
+entry_point_name: ''
+experiment_id: '158249011283897240'
+lifecycle_stage: active
+run_id: f07ad3bafddf454a8cb2f4c8ec604597
+run_name: skittish-hare-219
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1782980532178
+status: 4
+tags: []
+user_id: ankus

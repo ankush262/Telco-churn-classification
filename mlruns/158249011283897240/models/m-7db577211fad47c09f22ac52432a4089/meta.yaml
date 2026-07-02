@@ -1,0 +1,10 @@
+artifact_location: file:///D:/Github/ML projects/Telco-churn-classification/mlruns/158249011283897240/models/m-7db577211fad47c09f22ac52432a4089/artifacts
+creation_timestamp: 1782981003350
+experiment_id: '158249011283897240'
+last_updated_timestamp: 1782981029875
+model_id: m-7db577211fad47c09f22ac52432a4089
+model_type: null
+name: model
+source_run_id: 91d551551b5b4358ae1573e9177a7f7a
+status: 2
+status_message: null

@@ -1,0 +1,14 @@
+artifact_uri: file:///D:/Github/ML projects/Telco-churn-classification/mlruns/158249011283897240/e3ecbbeb902349eaa32dd2bb242e90cf/artifacts
+end_time: 1782980689413
+entry_point_name: ''
+experiment_id: '158249011283897240'
+lifecycle_stage: active
+run_id: e3ecbbeb902349eaa32dd2bb242e90cf
+run_name: debonair-stag-864
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1782980672483
+status: 4
+tags: []
+user_id: ankus

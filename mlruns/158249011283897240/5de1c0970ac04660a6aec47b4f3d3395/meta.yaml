@@ -1,0 +1,14 @@
+artifact_uri: file:///D:/Github/ML projects/Telco-churn-classification/mlruns/158249011283897240/5de1c0970ac04660a6aec47b4f3d3395/artifacts
+end_time: 1782981902149
+entry_point_name: ''
+experiment_id: '158249011283897240'
+lifecycle_stage: active
+run_id: 5de1c0970ac04660a6aec47b4f3d3395
+run_name: victorious-fox-352
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1782981877537
+status: 3
+tags: []
+user_id: ankus
