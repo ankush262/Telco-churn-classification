@@ -1,0 +1,14 @@
+artifact_uri: file:///D:/Github/ML projects/Telco-churn-classification/mlruns/158249011283897240/cfba510fee3b49419d456ee3aaced494/artifacts
+end_time: 1782981533103
+entry_point_name: ''
+experiment_id: '158249011283897240'
+lifecycle_stage: active
+run_id: cfba510fee3b49419d456ee3aaced494
+run_name: whimsical-kite-618
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1782981532622
+status: 4
+tags: []
+user_id: ankus

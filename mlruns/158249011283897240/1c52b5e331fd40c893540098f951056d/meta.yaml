@@ -1,0 +1,14 @@
+artifact_uri: file:///D:/Github/ML projects/Telco-churn-classification/mlruns/158249011283897240/1c52b5e331fd40c893540098f951056d/artifacts
+end_time: 1782980602640
+entry_point_name: ''
+experiment_id: '158249011283897240'
+lifecycle_stage: active
+run_id: 1c52b5e331fd40c893540098f951056d
+run_name: able-midge-177
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1782980602260
+status: 4
+tags: []
+user_id: ankus

@@ -24,45 +24,90 @@ Production Deployment:
 - Optimized for single-row inference (real-time serving)
 """
 
+import json
 import os
+from pathlib import Path
+from typing import Any, Dict
+
 import pandas as pd
 import mlflow
 
-# === MODEL LOADING CONFIGURATION ===
-# IMPORTANT: This path is set during Docker container build
-# In development: uses local MLflow artifacts
-# In production: uses model copied to container at build time
+ROOT = Path(__file__).resolve().parents[2]
 MODEL_DIR = "/app/model"
 
+
+def _find_model_path() -> Path:
+    """Locate the trained MLflow model artifact from local development or container paths."""
+    candidates = [
+        Path(MODEL_DIR),
+        ROOT / "artifacts" / "model",
+    ]
+
+    if (ROOT / "mlruns").exists():
+        for mlmodel_file in sorted((ROOT / "mlruns").rglob("MLmodel")):
+            if mlmodel_file.is_file():
+                candidates.append(mlmodel_file.parent)
+
+        for experiment_dir in sorted((ROOT / "mlruns").iterdir()):
+            if not experiment_dir.is_dir():
+                continue
+            for run_dir in sorted(experiment_dir.iterdir()):
+                if not run_dir.is_dir():
+                    continue
+                artifact_dir = run_dir / "artifacts" / "model"
+                if artifact_dir.exists():
+                    candidates.append(artifact_dir)
+
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+
+    raise FileNotFoundError("No trained model artifact was found.")
+
+
+def _load_feature_columns() -> list:
+    """Load the exact feature column order used during training."""
+    candidates = [
+        ROOT / "artifacts" / "feature_columns.json",
+        ROOT / "artifacts" / "feature_columns.txt",
+        ROOT / "artifacts" / "preprocessing.pkl",
+    ]
+
+    for candidate in candidates:
+        if not candidate.exists():
+            continue
+
+        if candidate.suffix == ".json":
+            with open(candidate, "r", encoding="utf-8") as handle:
+                loaded = json.load(handle)
+                if isinstance(loaded, list):
+                    return loaded
+                if isinstance(loaded, dict) and "feature_columns" in loaded:
+                    return loaded["feature_columns"]
+
+        if candidate.suffix == ".txt":
+            with open(candidate, "r", encoding="utf-8") as handle:
+                return [line.strip() for line in handle if line.strip()]
+
+        if candidate.suffix == ".pkl":
+            import joblib
+            payload = joblib.load(candidate)
+            if isinstance(payload, dict) and "feature_columns" in payload:
+                return payload["feature_columns"]
+
+    raise FileNotFoundError("Could not load feature columns from local artifacts.")
+
+
 try:
-    # Load the trained XGBoost model in MLflow pyfunc format
-    # This ensures compatibility regardless of the underlying ML library
-    model = mlflow.pyfunc.load_model(MODEL_DIR)
+    MODEL_DIR = _find_model_path()
+    model = mlflow.sklearn.load_model(str(MODEL_DIR))
     print(f"✅ Model loaded successfully from {MODEL_DIR}")
 except Exception as e:
     print(f"❌ Failed to load model from {MODEL_DIR}: {e}")
-    # Fallback for local development (OPTIONAL)
-    try:
-        # Try loading from local MLflow tracking
-        import glob
-        local_model_paths = glob.glob("./mlruns/*/*/artifacts/model")
-        if local_model_paths:
-            latest_model = max(local_model_paths, key=os.path.getmtime)
-            model = mlflow.pyfunc.load_model(latest_model)
-            MODEL_DIR = latest_model
-            print(f"✅ Fallback: Loaded model from {latest_model}")
-        else:
-            raise Exception("No model found in local mlruns")
-    except Exception as fallback_error:
-        raise Exception(f"Failed to load model: {e}. Fallback failed: {fallback_error}")
+    raise
 
-# === FEATURE SCHEMA LOADING ===
-# CRITICAL: Load the exact feature column order used during training
-# This ensures the model receives features in the expected order
 try:
-    feature_file = os.path.join(MODEL_DIR, "feature_columns.txt")
-    with open(feature_file) as f:
-        FEATURE_COLS = [ln.strip() for ln in f if ln.strip()]
+    FEATURE_COLS = _load_feature_columns()
     print(f"✅ Loaded {len(FEATURE_COLS)} feature columns from training")
 except Exception as e:
     raise Exception(f"Failed to load feature columns: {e}")
@@ -156,68 +201,29 @@ def _serve_transform(df: pd.DataFrame) -> pd.DataFrame:
     
     return df
 
-def predict(input_dict: dict) -> str:
-    """
-    Main prediction function for customer churn inference.
-    
-    This function provides the complete inference pipeline from raw customer data
-    to business-friendly prediction output. It's called by both the FastAPI endpoint
-    and the Gradio interface to ensure consistent predictions.
-    
-    Pipeline:
-    1. Convert input dictionary to DataFrame
-    2. Apply feature transformations (identical to training)
-    3. Generate model prediction using loaded XGBoost model
-    4. Convert prediction to user-friendly string
-    
-    Args:
-        input_dict: Dictionary containing raw customer data with keys matching
-                   the CustomerData schema (18 features total)
-                   
-    Returns:
-        Human-readable prediction string:
-        - "Likely to churn" for high-risk customers (model prediction = 1)
-        - "Not likely to churn" for low-risk customers (model prediction = 0)
-        
-    Example:
-        >>> customer_data = {
-        ...     "gender": "Female", "tenure": 1, "Contract": "Month-to-month",
-        ...     "MonthlyCharges": 85.0, ... # other features
-        ... }
-        >>> predict(customer_data)
-        "Likely to churn"
-    """
-    
-    # === STEP 1: Convert Input to DataFrame ===
-    # Create single-row DataFrame for pandas transformations
+def predict_with_details(input_dict: dict) -> Dict[str, Any]:
+    """Return the churn label and probability for a single customer record."""
     df = pd.DataFrame([input_dict])
-    
-    # === STEP 2: Apply Feature Transformations ===
-    # Use the same transformation pipeline as training
     df_enc = _serve_transform(df)
-    
-    # === STEP 3: Generate Model Prediction ===
-    # Call the loaded MLflow model for inference
-    # The model returns predictions in various formats depending on the ML library
+
     try:
-        preds = model.predict(df_enc)
-        
-        # Normalize prediction output to consistent format
-        if hasattr(preds, "tolist"):
-            preds = preds.tolist()  # Convert numpy array to list
-            
-        # Extract single prediction value (for single-row input)
-        if isinstance(preds, (list, tuple)) and len(preds) == 1:
-            result = preds[0]
+        if hasattr(model, "predict_proba"):
+            probability = float(model.predict_proba(df_enc)[0, 1])
+            result = int(probability >= 0.5)
         else:
-            result = preds
-            
+            result = int(model.predict(df_enc)[0])
+            probability = float(result)
     except Exception as e:
         raise Exception(f"Model prediction failed: {e}")
-    
-    # === STEP 4: Convert to Business-Friendly Output ===
-    # Convert binary prediction (0/1) to actionable business language
-    if result == 1:
-        return "Likely to churn"      # High risk - needs intervention
-    else:
-        return "Not likely to churn"  # Low risk - maintain normal service
+
+    label = "Likely to churn" if result == 1 else "Not likely to churn"
+    return {
+        "prediction": label,
+        "predicted_class": result,
+        "probability": probability,
+    }
+
+
+def predict(input_dict: dict) -> str:
+    """Return a human-readable churn prediction for the supplied customer data."""
+    return predict_with_details(input_dict)["prediction"]

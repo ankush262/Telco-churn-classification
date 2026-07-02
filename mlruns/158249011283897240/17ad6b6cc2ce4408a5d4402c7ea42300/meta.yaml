@@ -1,0 +1,14 @@
+artifact_uri: file:///D:/Github/ML projects/Telco-churn-classification/mlruns/158249011283897240/17ad6b6cc2ce4408a5d4402c7ea42300/artifacts
+end_time: 1782980810029
+entry_point_name: ''
+experiment_id: '158249011283897240'
+lifecycle_stage: active
+run_id: 17ad6b6cc2ce4408a5d4402c7ea42300
+run_name: wise-trout-825
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1782980774245
+status: 3
+tags: []
+user_id: ankus
